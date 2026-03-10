@@ -14,6 +14,6 @@ export const useFilteredProducts = ({ page, brands }: {page:number; brands:strin
     return {
         data: data?.data,
         isLoading,
-        totalProducts: data?.count,
+        totalProducts: data?.count ?? 0,
     }
 };

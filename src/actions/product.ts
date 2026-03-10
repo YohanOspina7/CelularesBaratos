@@ -44,3 +44,35 @@ export const getFilteredProducts = async ({
 
   return { data, count };
 };
+
+export const getRecentProducts = async () => {
+  const { products, error } = await supabase
+    .from("products")
+    .select("*, variants(*)")
+    .order("created_at", { ascending: false })
+    .limit(4);
+
+  if (error) {
+    console.log(error.message);
+    throw new Error(error.message);
+  }
+
+  return products;
+};
+
+export const getRandomProducts = async () => {
+  const { products, error } = await supabase
+    .from("products")
+    .select("*, variants(*)")
+    .limit(20);
+
+  if (error) {
+    console.log(error.message);
+    throw new Error(error.message);
+  }
+
+  // Seleccionar 4 productos aleatorios
+  const RandomProducts = products.sort(() => 0.5 - Math.random()).slice(0, 4);
+
+  return RandomProducts;
+};
