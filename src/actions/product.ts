@@ -46,7 +46,7 @@ export const getFilteredProducts = async ({
 };
 
 export const getRecentProducts = async () => {
-  const { products, error } = await supabase
+  const { data: products, error } = await supabase
     .from("products")
     .select("*, variants(*)")
     .order("created_at", { ascending: false })
@@ -61,7 +61,7 @@ export const getRecentProducts = async () => {
 };
 
 export const getRandomProducts = async () => {
-  const { products, error } = await supabase
+  const { data: products, error } = await supabase
     .from("products")
     .select("*, variants(*)")
     .limit(20);
