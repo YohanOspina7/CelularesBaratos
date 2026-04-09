@@ -71,8 +71,23 @@ export const getRandomProducts = async () => {
     throw new Error(error.message);
   }
 
-  // Seleccionar 4 productos aleatorios
-  const RandomProducts = products.sort(() => 0.5 - Math.random()).slice(0, 4);
+  // Seleccionar 4 productos al azar
+  const randomProducts = products.sort(() => 0.5 - Math.random()).slice(0, 4);
 
-  return RandomProducts;
+  return randomProducts;
+};
+
+export const getProductBySlug = async (slug: string) => {
+  const { data, error } = await supabase
+    .from("products")
+    .select("*, variants(*)")
+    .eq("slug", slug)
+    .single();
+
+  if (error) {
+    console.log(error.message);
+    throw new Error(error.message);
+  }
+
+  return data;
 };
