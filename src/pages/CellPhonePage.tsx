@@ -11,6 +11,7 @@ import { useEffect, useMemo, useState } from "react";
 import { type VariantProduct } from "../interfaces";
 import { Tag } from "../components/shared/Tag";
 import { Loader } from "../components/shared/Loader";
+import { useCounterStore } from "../store/counter.store";
 
 interface Acc {
   [key: string]: {
@@ -31,6 +32,10 @@ export const CellPhonePage = () => {
   const [selectedVariant, setSelectedVariant] = useState<VariantProduct | null>(
     null,
   );
+
+  const count = useCounterStore((state) => state.count);
+  const increment = useCounterStore((state) => state.increment);
+  const decrement = useCounterStore((state) => state.decrement);
 
   // Agrupamos las variantes por color
   const colors = useMemo(() => {
@@ -183,11 +188,11 @@ export const CellPhonePage = () => {
                 <p className="text-sm font-medium">Cantidad:</p>
 
                 <div className="flex gap-8 px-5 py-3 border rounded-full border-slate-200 w-fit">
-                  <button>
+                  <button onClick={decrement} disabled={count === 1}>
                     <LuMinus size={15} />
                   </button>
-                  <span className="text-sm text-slate-500">1</span>
-                  <button>
+                  <span className="text-sm text-slate-500">{count}</span>
+                  <button onClick={increment}>
                     <LuPlus size={15} />
                   </button>
                 </div>

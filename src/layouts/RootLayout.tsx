@@ -3,6 +3,7 @@ import { Navbar } from "../components/shared/Navbar";
 import { Footer } from "../components/shared/Footer";
 import { Banner } from "../components/Home/Banner";
 import { Newsletter } from "../components/Home/Newsletter";
+import { Sheet } from "../components/shared/Sheet";
 
 export const RootLayout = () => {
   const { pathname } = useLocation();
@@ -18,6 +19,8 @@ export const RootLayout = () => {
       </main>
 
       {pathname === "/" && <Newsletter />}
+
+      {true && <Sheet />}
 
       <Footer />
     </div>
