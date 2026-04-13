@@ -4,9 +4,13 @@ import { Footer } from "../components/shared/Footer";
 import { Banner } from "../components/Home/Banner";
 import { Newsletter } from "../components/Home/Newsletter";
 import { Sheet } from "../components/shared/Sheet";
+import { use } from "react";
+import { useGlobalStore } from "../store/global.store";
 
 export const RootLayout = () => {
   const { pathname } = useLocation();
+  const activeNavMobile = useGlobalStore((state) => state.activeNavMobile);
+  
 
   return (
     <div className="flex flex-col h-screen font-montserrat">
@@ -20,7 +24,9 @@ export const RootLayout = () => {
 
       {pathname === "/" && <Newsletter />}
 
-      {true && <Sheet />}
+      {<Sheet />}
+
+      {activeNavMobile && <NavbarMobile />}
 
       <Footer />
     </div>

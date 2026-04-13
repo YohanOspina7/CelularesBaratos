@@ -3,8 +3,15 @@ import { navbarLinks } from "../../constants/links";
 import { HiOutlineSearch, HiOutlineShoppingBag } from "react-icons/hi";
 import { FaBarsStaggered } from "react-icons/fa6";
 import { Logo } from "./Logo";
+import { useGlobalStore } from "../../store/global.store";
 
 export const Navbar = () => {
+  const openSheet = useGlobalStore((state) => state.openSheet);
+
+  const setActiveNavMobile = useGlobalStore(
+    (state) => state.setActiveNavMobile,
+  );
+
   return (
     <header className="flex items-center justify-between px-5 py-4 text-black bg-white border-b border-slate-200 lg:px-12">
       <Logo />
@@ -25,8 +32,9 @@ export const Navbar = () => {
         ))}
       </nav>
 
+      {/* SEARCH NAV */}
       <div className="flex items-center gap-5">
-        <button>
+        <button className="cursor-pointer" onClick={() => openSheet("search")}>
           <HiOutlineSearch size={25} />
         </button>
 
@@ -40,7 +48,11 @@ export const Navbar = () => {
           </Link>
         </div>
 
-        <button className="relative">
+        {/* CART NAV */}
+        <button
+          className="relative cursor-pointer"
+          onClick={() => openSheet("cart")}
+        >
           <span className="absolute grid w-5 h-5 text-xs text-white bg-black rounded-full -bottom-2 -right-2 place-items-center">
             0
           </span>
@@ -48,7 +60,7 @@ export const Navbar = () => {
         </button>
       </div>
 
-      <button className="md:hidden">
+      <button className="md:hidden" onClick={() => setActiveNavMobile(true)}>
         <FaBarsStaggered size={25} />
       </button>
     </header>
