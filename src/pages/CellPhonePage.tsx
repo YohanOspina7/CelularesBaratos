@@ -88,7 +88,9 @@ export const CellPhonePage = () => {
 
   // Obtener el stock
   const isOutOfStock = selectedVariant?.stock === 0;
-
+  
+  // Funció para añadir al carrito
+  
   if (isLoading) return <Loader />;
 
   if (!product || isError)
@@ -144,7 +146,7 @@ export const CellPhonePage = () => {
                   onClick={() => setSelectedColor(color)}
                 >
                   <span
-                    className="w-[26px] h-[26px] rounded-full"
+                    className="w-6.5 h-6.5 rounded-full"
                     style={{ backgroundColor: color }}
                   />
                 </button>

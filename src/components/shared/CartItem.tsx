@@ -1,5 +1,6 @@
 import { LuMinus, LuPlus } from "react-icons/lu";
 import { formatPrice } from "../helpers";
+import { useCartStore } from "../../store/Cart.store";
 
 export interface ICartItem {
   variantId: string;
@@ -18,14 +19,17 @@ interface Props {
 
 export const CartItem = ({ item }: Props) => {
     
-    // TODO: Añadir funciones de incremento y decremento
-    
+    const removeItem = useCartStore((state) => state.removeItem);
+    const updateQuantity = useCartStore((state) => state.updateQuantity);
+
     const increment = () => {
-        console.log('increment');
+        updateQuantity(item.variantId, item.quantity + 1);
     };
 
     const decrement = () => {
-        console.log('decrement');
+      if (item.quantity > 1) {
+        updateQuantity(item.variantId, item.quantity - 1);
+      }
     }
         
     
@@ -49,14 +53,25 @@ export const CartItem = ({ item }: Props) => {
           </p>
         </div>
 
-        <div className="flex gap-4"></div>
-        <div className="flex items-center gap-5 px-2 py-1 border border-slate-200 w-fit-rounded-full">
-          <button onClick={decrement} disabled={item.quantity === 1}>
-            <LuMinus size={15} />
-          </button>
-          <span className="text-sm text-slate-500">{item.quantity}</span>
-          <button onClick={increment}>
-            <LuPlus size={15} />
+        <div className="flex gap-4">
+          {/* 1. Selector de Cantidad */}
+          <div className="flex items-center gap-5 px-2 py-1 border rounded-full border-slate-200 w-fit">
+            <button onClick={decrement} disabled={item.quantity === 1}>
+              <LuMinus size={15} />
+            </button>
+            <span className="text-sm font-medium text-slate-500">
+              {item.quantity}
+            </span>
+            <button onClick={increment}>
+              <LuPlus size={15} />
+            </button>
+          </div>
+
+          <button
+            className="font-medium underline text-[10px]"
+            onClick={() => removeItem(item.variantId)}
+          >
+            Eliminar
           </button>
         </div>
       </div>
