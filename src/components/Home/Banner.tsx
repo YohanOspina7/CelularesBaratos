@@ -6,12 +6,12 @@ export const Banner = () => {
     <div className="relative text-white bg-gray-900">
         {/* IMAGEN DE FONDO */}
         <div 
-            className="absolute inset-0 h-full bg-center bg-cover opacity-70" 
+            className="absolute inset-0 h-full bg-center bg-cover opacity-100" 
             style={{ backgroundImage: 'url(/img/img-banner.png)' }}
         />
 
         {/* OVERLAY */}
-        <div className="absolute inset-0 bg-black opacity-50" />
+        <div className="absolute inset-0 bg-black opacity-20" />
 
         {/* CONTENIDO */}
         <div className="relative z-10 flex flex-col items-center justify-center px-4 py-20 text-center lg:py-40 lg:px-8">
