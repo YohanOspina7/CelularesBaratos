@@ -4,9 +4,12 @@ import { HiOutlineSearch, HiOutlineShoppingBag } from "react-icons/hi";
 import { FaBarsStaggered } from "react-icons/fa6";
 import { Logo } from "./Logo";
 import { useGlobalStore } from "../../store/global.store";
+import { useCartStore } from "../../store/Cart.store";
 
 export const Navbar = () => {
   const openSheet = useGlobalStore((state) => state.openSheet);
+
+  const totalItemsInCart = useCartStore(state => state.totalItemsInCart)
 
   const setActiveNavMobile = useGlobalStore(
     (state) => state.setActiveNavMobile,
@@ -54,7 +57,7 @@ export const Navbar = () => {
           onClick={() => openSheet("cart")}
         >
           <span className="absolute grid w-5 h-5 text-xs text-white bg-black rounded-full -bottom-2 -right-2 place-items-center">
-            0
+            {totalItemsInCart}
           </span>
           <HiOutlineShoppingBag size={25} />
         </button>

@@ -29,12 +29,12 @@ export const Cart = () => {
       {
         totalItemsInCart > 0 ? (
         <>
-          {/* Lista de productos añadidos al carrito */}
+          {/* LISTA DE PRODUCTOS AÑADIDOS AL CARRITO */}
           <div className="flex-1 overflow-auto p-7">
             <ul className='space-y-9'>
               {
                 carItems.map((item) => (
-                  <CartItem item={item} key={item.productId} />
+                  <CartItem item={item} key={item.variantId} />
                 ))
               }
             </ul>

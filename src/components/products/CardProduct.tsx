@@ -90,7 +90,9 @@ export const CardProduct = ({
           {colors.map((color) => (
             <span
               key={color.color}
-              className={`grid place-items-center w-5 h-5 rounded-full cursor-pointer`}
+              className={`grid place-items-center w-5 h-5 rounded-full cursor-pointer ${
+                activeColor.color === color.color ? 'border border-black' : ''
+              }`}
               onClick={() => setActiveColor(color)}
             >
               <span

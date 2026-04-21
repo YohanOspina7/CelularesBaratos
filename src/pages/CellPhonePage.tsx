@@ -2,7 +2,7 @@ import { LuMinus, LuPlus } from "react-icons/lu";
 import { Separator } from "../components/shared/Separator";
 import { formatPrice } from "../components/helpers";
 import { CiDeliveryTruck } from "react-icons/ci";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { BsChatLeftText } from "react-icons/bs";
 import { ProductDescription } from "../components/one-product/ProductDescription";
 import { GridImages } from "../components/one-product/GridImages";
@@ -12,6 +12,8 @@ import { type VariantProduct } from "../interfaces";
 import { Tag } from "../components/shared/Tag";
 import { Loader } from "../components/shared/Loader";
 import { useCounterStore } from "../store/counter.store";
+import { useCartStore } from "../store/Cart.store";
+import toast from "react-hot-toast";
 
 interface Acc {
   [key: string]: {
@@ -36,6 +38,10 @@ export const CellPhonePage = () => {
   const count = useCounterStore((state) => state.count);
   const increment = useCounterStore((state) => state.increment);
   const decrement = useCounterStore((state) => state.decrement);
+  
+  const addItem = useCartStore(state => state.addItem);
+
+  const navigate = useNavigate();
 
   // Agrupamos las variantes por color
   const colors = useMemo(() => {
@@ -90,6 +96,42 @@ export const CellPhonePage = () => {
   const isOutOfStock = selectedVariant?.stock === 0;
   
   // Funció para añadir al carrito
+  const addToCart = () => {
+    if (selectedVariant) {
+      addItem({
+        variantId: selectedVariant.id,
+        productId: product?.id || '',
+        name: product?.name || '',
+        image: product?.images[0] || '',
+        color: selectedVariant.color_name,
+        storage: selectedVariant.storage,
+        price: selectedVariant.price,
+        quantity: count,
+      });
+      toast.success('Producto añadido al carrito', {
+        position: 'bottom-right',
+      });
+    }
+  };
+
+  // Función para comprar ahora
+
+  const buyNow = () => {
+    if (selectedVariant) {
+      addItem({
+        variantId: selectedVariant.id,
+        productId: product?.id || '',
+        name: product?.name || '',
+        image: product?.images[0] || '',
+        color: selectedVariant.color_name,
+        storage: selectedVariant.storage,
+        price: selectedVariant.price,
+        quantity: count,
+      });
+
+      navigate('/checkout')
+    }
+  }
   
   if (isLoading) return <Loader />;
 
@@ -202,10 +244,12 @@ export const CellPhonePage = () => {
 
               {/* BOTONES ACCIÓN */}
               <div className="flex flex-col gap-3">
-                <button className="bg-[#f3f3f3] uppercase font-semibold tracking-widest text-xs py-4 rounded-full transition-all duration-300 hover:bg-[#e2e2e2]">
+                <button className="bg-[#f3f3f3] uppercase font-semibold tracking-widest text-xs py-4 rounded-full transition-all duration-300 hover:bg-[#e2e2e2]" 
+                onClick={addToCart}>
                   Agregar al carro
                 </button>
-                <button className="py-4 text-xs font-semibold tracking-widest text-white uppercase bg-black rounded-full">
+                <button className="py-4 text-xs font-semibold tracking-widest text-white uppercase bg-black rounded-full" 
+                onClick={buyNow}>
                   Comprar ahora
                 </button>
               </div>
