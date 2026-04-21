@@ -25,7 +25,9 @@ interface Acc {
 export const CellPhonePage = () => {
   const { slug } = useParams<{ slug: string }>();
 
-  const { product, isLoading, isError } = useProduct(slug || "");
+  const [currentSlug, setCurrentSlug] = useState(slug);
+
+  const { product, isLoading, isError } = useProduct(currentSlug || "");
 
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
 
@@ -38,8 +40,8 @@ export const CellPhonePage = () => {
   const count = useCounterStore((state) => state.count);
   const increment = useCounterStore((state) => state.increment);
   const decrement = useCounterStore((state) => state.decrement);
-  
-  const addItem = useCartStore(state => state.addItem);
+
+  const addItem = useCartStore((state) => state.addItem);
 
   const navigate = useNavigate();
 
@@ -94,22 +96,22 @@ export const CellPhonePage = () => {
 
   // Obtener el stock
   const isOutOfStock = selectedVariant?.stock === 0;
-  
+
   // Funció para añadir al carrito
   const addToCart = () => {
     if (selectedVariant) {
       addItem({
         variantId: selectedVariant.id,
-        productId: product?.id || '',
-        name: product?.name || '',
-        image: product?.images[0] || '',
+        productId: product?.id || "",
+        name: product?.name || "",
+        image: product?.images[0] || "",
         color: selectedVariant.color_name,
         storage: selectedVariant.storage,
         price: selectedVariant.price,
         quantity: count,
       });
-      toast.success('Producto añadido al carrito', {
-        position: 'bottom-right',
+      toast.success("Producto añadido al carrito", {
+        position: "bottom-right",
       });
     }
   };
@@ -120,19 +122,29 @@ export const CellPhonePage = () => {
     if (selectedVariant) {
       addItem({
         variantId: selectedVariant.id,
-        productId: product?.id || '',
-        name: product?.name || '',
-        image: product?.images[0] || '',
+        productId: product?.id || "",
+        name: product?.name || "",
+        image: product?.images[0] || "",
         color: selectedVariant.color_name,
         storage: selectedVariant.storage,
         price: selectedVariant.price,
         quantity: count,
       });
 
-      navigate('/checkout')
+      navigate("/checkout");
     }
-  }
-  
+  };
+
+  // Resetear el slug actual cuando cambia en la URL
+  useEffect(() => {
+    setCurrentSlug(slug);
+
+    // Reiniciar color, almacenamiento y variante seleccionada
+    setSelectedColor(null);
+    setSelectedStorage(null);
+    setSelectedVariant(null);
+  }, [slug]);
+
   if (isLoading) return <Loader />;
 
   if (!product || isError)
@@ -177,7 +189,7 @@ export const CellPhonePage = () => {
           </ul>
 
           <div className="flex flex-col gap-3">
-            <p>Color: {selectedColor && colors[selectedColor].name}</p>
+            <p>Color: {selectedColor && colors[selectedColor]?.name}</p>
             <div className="flex gap-3">
               {availableColors.map((color) => (
                 <button
@@ -200,7 +212,7 @@ export const CellPhonePage = () => {
           <div className="flex flex-col gap-3">
             <p className="text-xs font-medium">Almacenamiento disponible</p>
 
-            {selectedColor && (
+            {selectedColor && colors[selectedColor] && (
               <div className="flex gap-3">
                 <select
                   className="px-3 py-1 border border-gray-300 rounded-lg"
@@ -244,12 +256,16 @@ export const CellPhonePage = () => {
 
               {/* BOTONES ACCIÓN */}
               <div className="flex flex-col gap-3">
-                <button className="bg-[#f3f3f3] uppercase font-semibold tracking-widest text-xs py-4 rounded-full transition-all duration-300 hover:bg-[#e2e2e2]" 
-                onClick={addToCart}>
+                <button
+                  className="bg-[#f3f3f3] uppercase font-semibold tracking-widest text-xs py-4 rounded-full transition-all duration-300 hover:bg-[#e2e2e2]"
+                  onClick={addToCart}
+                >
                   Agregar al carro
                 </button>
-                <button className="py-4 text-xs font-semibold tracking-widest text-white uppercase bg-black rounded-full" 
-                onClick={buyNow}>
+                <button
+                  className="py-4 text-xs font-semibold tracking-widest text-white uppercase bg-black rounded-full"
+                  onClick={buyNow}
+                >
                   Comprar ahora
                 </button>
               </div>
