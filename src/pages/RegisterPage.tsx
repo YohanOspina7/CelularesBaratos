@@ -28,10 +28,10 @@ export const RegisterPage = () => {
   });
 
   const onLogin = handleSubmit((data) => {
-    console.log(data)
+    console.log(data);
   });
 
-  console.log(errors)
+  console.log(errors);
 
   return (
     <div className="flex flex-col items-center h-full gap-5 mt-12">
@@ -42,48 +42,49 @@ export const RegisterPage = () => {
       </p>
 
       <>
-        <form className="flex flex-col items-center w-full gap-4 mt-10 sm:w-100 lg:w-125" 
-        onSubmit={onLogin}
+        <form
+          className="flex flex-col items-center w-full gap-4 mt-10 sm:w-100 lg:w-125"
+          onSubmit={onLogin}
         >
           <input
             type="text"
             placeholder="Nombre completo"
             className="w-full px-5 py-4 text-sm text-black border rounded border-slate-200 placeholder:text-black-full"
-            {...register('fullName')}
+            {...register("fullName")}
           />
-          {
-            errors.fullName && (<p className="text-red-500">{errors.fullName.message}</p>)
-          }
+          {errors.fullName && (
+            <p className="text-red-500">{errors.fullName.message}</p>
+          )}
 
           <input
             type="text"
             placeholder="Celular"
             className="w-full px-5 py-4 text-sm text-black border rounded border-slate-200 placeholder:text-black-full"
-            {...register('phone')}
+            {...register("phone")}
           />
-          {
-            errors.phone && (<p className="text-red-500">{errors.phone.message}</p>)
-          }
+          {errors.phone && (
+            <p className="text-red-500">{errors.phone.message}</p>
+          )}
 
           <input
             type="email"
             placeholder="Ingresa tu correo electrónico"
             className="w-full px-5 py-4 text-sm text-black border rounded border-slate-200 placeholder:text-black-full"
-            {...register('email')}
+            {...register("email")}
           />
-          {
-            errors.email && (<p className="text-red-500">{errors.email.message}</p>)
-          }
+          {errors.email && (
+            <p className="text-red-500">{errors.email.message}</p>
+          )}
 
           <input
             type="password"
             placeholder="Ingresa tu contraseña"
             className="w-full px-5 py-4 text-sm text-black border rounded border-slate-200 placeholder:text-black-full"
-            {...register('password')}
+            {...register("password")}
           />
-          {
-            errors.password && (<p className="text-red-500">{errors.password.message}</p>)
-          }
+          {errors.password && (
+            <p className="text-red-500">{errors.password.message}</p>
+          )}
 
           <button className="w-full py-4 mt-5 text-xs font-semibold tracking-widest text-white uppercase bg-black rounded-full">
             Registrarme
