@@ -2,6 +2,8 @@ import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { LuLoader } from "react-icons/lu";
+import { useRegister } from "../hooks";
 
 export const userRegisterSchema = z.object({
   email: z.string().email("El correo electrónico no es válido"),
@@ -27,8 +29,11 @@ export const RegisterPage = () => {
     resolver: zodResolver(userRegisterSchema),
   });
 
-  const onLogin = handleSubmit((data) => {
-    console.log(data);
+  const { mutate, isPending } = useRegister();
+
+  const onRegister = handleSubmit((data) => {
+    const { email, password, fullName, phone } = data;
+    mutate({ email, password, fullName, phone });
   });
 
   console.log(errors);
@@ -41,63 +46,69 @@ export const RegisterPage = () => {
         Por favor, rellene los siguientes campos:
       </p>
 
-      <>
-        <form
-          className="flex flex-col items-center w-full gap-4 mt-10 sm:w-100 lg:w-125"
-          onSubmit={onLogin}
-        >
-          <input
-            type="text"
-            placeholder="Nombre completo"
-            className="w-full px-5 py-4 text-sm text-black border rounded border-slate-200 placeholder:text-black-full"
-            {...register("fullName")}
-          />
-          {errors.fullName && (
-            <p className="text-red-500">{errors.fullName.message}</p>
-          )}
+      {isPending ? (
+        <div className="flex justify-center w-full h-full mt-20">
+          <LuLoader className='animate-spin' size={60} />
+        </div>
+      ) : (
+        <>
+          <form
+            className="flex flex-col items-center w-full gap-4 mt-10 sm:w-100 lg:w-125"
+            onSubmit={onRegister}
+          >
+            <input
+              type="text"
+              placeholder="Nombre completo"
+              className="w-full px-5 py-4 text-sm text-black border rounded border-slate-200 placeholder:text-black-full"
+              {...register("fullName")}
+            />
+            {errors.fullName && (
+              <p className="text-red-500">{errors.fullName.message}</p>
+            )}
 
-          <input
-            type="text"
-            placeholder="Celular"
-            className="w-full px-5 py-4 text-sm text-black border rounded border-slate-200 placeholder:text-black-full"
-            {...register("phone")}
-          />
-          {errors.phone && (
-            <p className="text-red-500">{errors.phone.message}</p>
-          )}
+            <input
+              type="text"
+              placeholder="Celular"
+              className="w-full px-5 py-4 text-sm text-black border rounded border-slate-200 placeholder:text-black-full"
+              {...register("phone")}
+            />
+            {errors.phone && (
+              <p className="text-red-500">{errors.phone.message}</p>
+            )}
 
-          <input
-            type="email"
-            placeholder="Ingresa tu correo electrónico"
-            className="w-full px-5 py-4 text-sm text-black border rounded border-slate-200 placeholder:text-black-full"
-            {...register("email")}
-          />
-          {errors.email && (
-            <p className="text-red-500">{errors.email.message}</p>
-          )}
+            <input
+              type="email"
+              placeholder="Ingresa tu correo electrónico"
+              className="w-full px-5 py-4 text-sm text-black border rounded border-slate-200 placeholder:text-black-full"
+              {...register("email")}
+            />
+            {errors.email && (
+              <p className="text-red-500">{errors.email.message}</p>
+            )}
 
-          <input
-            type="password"
-            placeholder="Ingresa tu contraseña"
-            className="w-full px-5 py-4 text-sm text-black border rounded border-slate-200 placeholder:text-black-full"
-            {...register("password")}
-          />
-          {errors.password && (
-            <p className="text-red-500">{errors.password.message}</p>
-          )}
+            <input
+              type="password"
+              placeholder="Ingresa tu contraseña"
+              className="w-full px-5 py-4 text-sm text-black border rounded border-slate-200 placeholder:text-black-full"
+              {...register("password")}
+            />
+            {errors.password && (
+              <p className="text-red-500">{errors.password.message}</p>
+            )}
 
-          <button className="w-full py-4 mt-5 text-xs font-semibold tracking-widest text-white uppercase bg-black rounded-full">
-            Registrarme
-          </button>
-        </form>
+            <button className="w-full py-4 mt-5 text-xs font-semibold tracking-widest text-white uppercase bg-black rounded-full">
+              Registrarme
+            </button>
+          </form>
 
-        <p className="text-sm text-stone-800">
-          ¿Ya tienes una cuenta?
-          <Link to="/register" className="ml-2 underline">
-            Inicia sesion
-          </Link>
-        </p>
-      </>
+          <p className="text-sm text-stone-800">
+            ¿Ya tienes una cuenta?
+            <Link to="/register" className="ml-2 underline">
+              Inicia sesion
+            </Link>
+          </p>
+        </>
+      )}
     </div>
   );
 };

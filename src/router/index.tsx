@@ -1,6 +1,13 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import { RootLayout } from "../layouts/RootLayout";
-import { HomePage, CellPhonesPage, AboutPage, CellPhonePage } from "../pages";
+import { ClientLayout } from "../layouts/ClientLayout";
+import {
+  HomePage,
+  CellPhonesPage,
+  AboutPage,
+  CellPhonePage,
+  OrdersUserPage,
+} from "../pages";
 import { LoginPage } from "../pages/LoginPage";
 import { RegisterPage } from "../pages/RegisterPage";
 
@@ -26,12 +33,26 @@ export const router = createBrowserRouter([
         element: <AboutPage />,
       },
       {
-        path: 'login',
+        path: "login",
         element: <LoginPage />,
       },
       {
-        path: 'register',
+        path: "register",
         element: <RegisterPage />,
+      },
+      {
+        path: "account",
+        element: <ClientLayout />,
+        children: [
+          {
+            path: "",
+            element: <Navigate to="/account/pedidos" />,
+          },
+          {
+            path: "pedidos",
+            element: <OrdersUserPage />,
+          },
+        ],
       },
     ],
   },
