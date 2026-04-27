@@ -21,7 +21,7 @@ export const Navbar = () => {
     (state) => state.setActiveNavMobile,
   );
 
-	const { session, isLoading } = useUser();
+  const { session, isLoading } = useUser();
 
   const userId = session?.user.id;
 

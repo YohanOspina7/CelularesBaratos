@@ -10,7 +10,7 @@ export const useUser = () => {
   });
 
   return {
-    data: data?.session,
+    session: data?.session,
     isLoading,
   };
 };

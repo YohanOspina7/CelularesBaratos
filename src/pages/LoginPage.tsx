@@ -1,19 +1,25 @@
 import React, { useState } from "react";
 import { LuLoader } from "react-icons/lu";
-import { Link } from "react-router-dom";
-import { useLogin } from "../hooks";
+import { Link, Navigate } from "react-router-dom";
+import { useLogin, useUser } from "../hooks";
+import { Loader } from "../components/shared/Loader";
 
 export const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const { mutate, isPending } = useLogin();
+  const { session, isLoading } = useUser();
 
   const onLogin = (e: React.FormEvent) => {
     e.preventDefault();
 
     mutate({ email, password });
   };
+
+  if (isLoading) return <Loader />
+
+  if (session) return <Navigate to="/" />
 
   return (
     <div className="flex flex-col items-center h-full gap-5 mt-12">

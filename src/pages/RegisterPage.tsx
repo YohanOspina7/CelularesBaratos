@@ -1,9 +1,10 @@
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { LuLoader } from "react-icons/lu";
-import { useRegister } from "../hooks";
+import { useRegister, useUser } from "../hooks";
+import { Loader } from "../components/shared/Loader";
 
 export const userRegisterSchema = z.object({
   email: z.string().email("El correo electrónico no es válido"),
@@ -36,7 +37,9 @@ export const RegisterPage = () => {
     mutate({ email, password, fullName, phone });
   });
 
-  console.log(errors);
+  const { session, isLoading } = useUser();
+  if (isLoading) return <Loader />
+  if (session) return <Navigate to="/" />
 
   return (
     <div className="flex flex-col items-center h-full gap-5 mt-12">
