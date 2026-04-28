@@ -3,7 +3,6 @@ import { FiPlus } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import type { VariantProduct } from "../../interfaces";
 import { formatPrice } from "../helpers";
-import { Tag } from "../shared/tag";
 
 interface Props {
     img: string;
@@ -36,7 +35,7 @@ export const CardProduct = ({
     
     return (
         <div className='relative flex flex-col gap-6 '>
-            <Link to={`/celulares/${slug}`} className='relative flex overflow-hidden group'>
+            <Link to={`/productos/${slug}`} className='relative flex overflow-hidden group'>
                 <div className='flex h-[350px] w-full items-center justify-center py-2 lg:h-[250px]'>
                     <img 
                         src={img} 
@@ -72,7 +71,9 @@ export const CardProduct = ({
             </div>
             
             <div className="absolute top-2 left-2">
-                {stock === 0 && <Tag contentTag="agotado" />}
+                {
+                    stock === 0 && <span>Agotado</span>
+                }
             </div>
         </div>
   )
