@@ -1,19 +1,11 @@
 import { Link, Navigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { LuLoader } from "react-icons/lu";
 import { useRegister, useUser } from "../hooks";
 import { Loader } from "../components/shared/Loader";
+import { userRegisterSchema, type UserRegisterFromValues } from "../lib/validators";
 
-export const userRegisterSchema = z.object({
-  email: z.string().email("El correo electrónico no es válido"),
-  password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
-  fullName: z.string().min(1, "El nombre completo es requerido"),
-  phone: z.string().optional(),
-});
-
-export type UserRegisterFromValues = z.infer<typeof userRegisterSchema>;
 
 export const RegisterPage = () => {
   const {
@@ -38,8 +30,8 @@ export const RegisterPage = () => {
   });
 
   const { session, isLoading } = useUser();
-  if (isLoading) return <Loader />
-  if (session) return <Navigate to="/" />
+  if (isLoading) return <Loader />;
+  if (session) return <Navigate to="/" />;
 
   return (
     <div className="flex flex-col items-center h-full gap-5 mt-12">
@@ -51,7 +43,7 @@ export const RegisterPage = () => {
 
       {isPending ? (
         <div className="flex justify-center w-full h-full mt-20">
-          <LuLoader className='animate-spin' size={60} />
+          <LuLoader className="animate-spin" size={60} />
         </div>
       ) : (
         <>
