@@ -3,10 +3,12 @@ import { Navbar } from "../components/shared/Navbar";
 import { Footer } from "../components/shared/Footer";
 import { Banner } from "../components/Home/Banner";
 import { Newsletter } from "../components/Home/Newsletter";
+import { Sheet } from "../components/shared/Sheet";
+import { NavBarMobile } from "../components/shared/NavBarMobile";
 
 export const RootLayout = () => {
   const { pathname } = useLocation();
-
+  
   return (
     <div className="flex flex-col h-screen font-montserrat">
       <Navbar />
@@ -18,6 +20,10 @@ export const RootLayout = () => {
       </main>
 
       {pathname === "/" && <Newsletter />}
+
+      {<Sheet />}
+
+      {<NavBarMobile />}
 
       <Footer />
     </div>

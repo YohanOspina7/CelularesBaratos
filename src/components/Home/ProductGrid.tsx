@@ -1,9 +1,9 @@
-import type { preparedProducts } from "../../interfaces";
+import type { PreparedProducts } from "../../interfaces";
 import { CardProduct } from "../products/CardProduct";
 
 interface Props {
     title: string;
-    products: preparedProducts[];
+    products: PreparedProducts[];
     
 }
 
