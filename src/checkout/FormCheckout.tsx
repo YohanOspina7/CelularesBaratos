@@ -3,6 +3,9 @@ import { InputAddress } from "./InputAddress";
 import { type AddressFormValues, addressSchema } from "../lib/validators";
 import { useForm } from "react-hook-form";
 import { ItemsCheckout } from "./ItemsCheckout";
+import { useCartStore } from "../store/Cart.store";
+import { ImSpinner2 } from "react-icons/im";
+import { useCreateOrder } from "../hooks";
 
 export const FormCheckout = () => {
   const {
@@ -13,9 +16,39 @@ export const FormCheckout = () => {
     resolver: zodResolver(addressSchema),
   });
 
+  const { mutate: createOrder, isPending } = useCreateOrder();
+
+  const cleanCart = useCartStore((state) => state.cleanCart);
+  const cartItems = useCartStore((state) => state.items);
+  const totalAmount = useCartStore((state) => state.totalAmount);
+
   const onSubmit = handleSubmit((data) => {
-    console.log(data);
+    const orderInput = {
+      address: data,
+      cartItems: cartItems.map((item) => ({
+        variantId: item.variantId,
+        quantity: item.quantity,
+        price: item.price,
+      })),
+      totalAmount,
+    };
+
+    createOrder(orderInput, {
+      onSuccess: () => {
+        cleanCart();
+      },
+    });
   });
+
+  if (isPending) {
+    return (
+      <div className="flex flex-col gap-3 h-screen-tems-center-justify-center">
+        <ImSpinner2 className="w-10 h-10 animate-spin" />
+
+        <p className="text-sm font-medium">Estamos procesando tu pedido</p>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -29,14 +62,14 @@ export const FormCheckout = () => {
             name="addressLine1"
             placeholder="Dirección principal"
           />
-          
+
           <InputAddress
             register={register}
             errors={errors}
             name="addressLine2"
             placeholder="Dirección adicional (Opcional)"
           />
-          
+
           <InputAddress
             register={register}
             errors={errors}
@@ -58,7 +91,10 @@ export const FormCheckout = () => {
             placeholder="Código Postal (Opcional)"
           />
 
-          <select className="p-3 border rounded-md border-slate-200" {...register('country')}>
+          <select
+            className="p-3 border rounded-md border-slate-200"
+            {...register("country")}
+          >
             <option value="Colombia">Colombia</option>
           </select>
         </div>

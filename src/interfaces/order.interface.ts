@@ -8,7 +8,7 @@ export interface OrderInput {
     country: string;
   };
   cartItems: {
-    variatnId: string;
+    variantId: string;
     quantity: number;
     price: number;
   }[];
