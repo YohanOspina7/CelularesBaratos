@@ -77,36 +77,50 @@ export const signUp = async ({
   }
 };
 
-export const signIn = async ({email, password}: IAuthLogin) => {
-
+export const signIn = async ({ email, password }: IAuthLogin) => {
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
-    password
-  })
+    password,
+  });
 
   if (error) {
     console.log(error);
-    throw new Error('Email o contraseña incorrecta');
+    throw new Error("Email o contraseña incorrecta");
   }
 
   return data;
 };
 
 export const signOut = async () => {
-  const { error } = await supabase.auth.signOut()
-
-  if (error) {
-    console.log(error)
-    throw new Error('Erro al cerrar sesión')
-  }
-};
-
-export const getSession = async() => {
-  const {data, error} = await supabase.auth.getSession();
+  const { error } = await supabase.auth.signOut();
 
   if (error) {
     console.log(error);
-    throw new Error('Error al obtener la sesión');
+    throw new Error("Erro al cerrar sesión");
+  }
+};
+
+export const getSession = async () => {
+  const { data, error } = await supabase.auth.getSession();
+
+  if (error) {
+    console.log(error);
+    throw new Error("Error al obtener la sesión");
   }
   return data;
-}
+};
+
+export const getUserData = async (userId: string) => {
+  const { data, error } = await supabase
+    .from("customers")
+    .select("*")
+    .eq("user_id", userId)
+    .single();
+
+  if (error) {
+    console.log(error);
+    throw new Error("Error al obtener los datos del usuario");
+  }
+
+  return data;
+};
