@@ -1,11 +1,28 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useCartStore } from "../store/Cart.store";
 import { FormCheckout } from "../checkout/FormCheckout";
 import { ItemsCheckout } from "../checkout/ItemsCheckout";
+import { useUser } from "../hooks";
+import { Loader } from "../components/shared/Loader";
+import { useEffect } from "react";
+import { supabase } from "../supabase/client";
 
 export const CheckoutPage = () => {
+  const totalItems = useCartStore((state) => state.totalItemsInCart);
 
-  const totalItems = useCartStore(state => state.totalItemsInCart);
+  const { isLoading } = useUser();
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === "SIGNED_OUT" || !session) {
+        navigate("/login");
+      }
+    });
+  }, [navigate]);
+
+  if (isLoading) return <Loader />;
 
   return (
     <div
@@ -45,7 +62,7 @@ export const CheckoutPage = () => {
           </div>
         ) : (
           <>
-            <div className="w-full md:w-[50%] p-10">              
+            <div className="w-full md:w-[50%] p-10">
               <FormCheckout />
             </div>
 
@@ -55,7 +72,6 @@ export const CheckoutPage = () => {
                 minHeight: "calc(100vh - 100px)",
               }}
             >
-              
               {/* ELEMENTOS DEL CARRITO */}
 
               <ItemsCheckout />
