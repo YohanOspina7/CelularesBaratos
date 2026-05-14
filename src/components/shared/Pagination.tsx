@@ -33,7 +33,7 @@ export const Pagination = ({ totalItems, page, setPage }: Props) => {
 
       <div className="flex gap-3">
         <button
-          className="btn-paginated"
+          className="cursor-pointer btn-paginated"
           onClick={handlePrevPage}
           disabled={page === 1}
         >
@@ -41,7 +41,7 @@ export const Pagination = ({ totalItems, page, setPage }: Props) => {
         </button>
 
         <button
-          className="btn-paginated"
+          className="cursor-pointer btn-paginated"
           onClick={handleNextPage}
           disabled={isLastPage}
         >
