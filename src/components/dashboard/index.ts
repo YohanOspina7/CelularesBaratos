@@ -5,4 +5,7 @@ export * from "./Sidebar";
 // PRODUCTOS
 export * from "./products/TableProduct";
 export * from "./products/CellTableProduct";
-export * from "./products/FormProduct"
+export * from "./products/FormProduct";
+export * from "./products/SectionFormProduct";
+export * from "./products/InputForm";
+export * from './products/FormProduct'
