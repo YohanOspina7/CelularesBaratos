@@ -5,6 +5,9 @@ import { useNavigate } from "react-router-dom";
 import { SectionFormProduct } from "./SectionFormProduct";
 import { useForm } from "react-hook-form";
 import { InputForm } from "./InputForm";
+import { FeaturesInput } from "./FeaturesInput";
+import { useEffect } from "react";
+import { generateSlug } from "../../helpers";
 
 interface Props {
   titleForm: string;
@@ -27,6 +30,16 @@ export const FormProduct = ({ titleForm }: Props) => {
   const onSubmit = handleSubmit((data) => {
     console.log(data);
   });
+
+  const watchName = watch('name')
+
+  useEffect(() => {
+    if (!watchName) return
+
+    const generatedSlug = generateSlug(watchName)
+    setValue('slug', generatedSlug, {shouldTouch: true})
+    
+  }, [watchName, setValue])
 
   return (
     <div className="relative flex flex-col gap-6">
@@ -64,7 +77,46 @@ export const FormProduct = ({ titleForm }: Props) => {
             errors={errors}
             required
           />
+          <FeaturesInput control={control} errors={errors} />
         </SectionFormProduct>
+
+        <SectionFormProduct>
+          <InputForm 
+          type='text'
+          label='Slug'
+          name='slug'
+          placeholder="iphone-13-pro-max"
+          register={register}
+          errors={errors}
+          />
+
+          <InputForm 
+          type='text'
+          label='Marca'
+          name='brand'
+          placeholder="Apple"
+          register={register}
+          errors={errors}
+          required
+          />
+        </SectionFormProduct>
+
+        <SectionFormProduct titleSection="Variantes del Producto" className="h-2 lg:col-span-2">
+          <VariantsInput />
+        </SectionFormProduct>
+
+        <div className="absolute top-0 right-0 flex gap-3">
+          <button
+            className="btn-secondary-outline"
+            type="button"
+            onClick={() => navigate(-1)}
+          >
+            Cancelar
+          </button>
+          <button className="btn-primary" type="submit">
+            Guardar Producto
+          </button>
+        </div>
       </form>
     </div>
   );
