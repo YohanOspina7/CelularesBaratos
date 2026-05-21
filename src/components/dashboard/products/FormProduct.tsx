@@ -9,6 +9,7 @@ import { FeaturesInput } from "./FeaturesInput";
 import { useEffect } from "react";
 import { generateSlug } from "../../helpers";
 import { VariantsInput } from "./VariantsInput";
+import { UpLoaderImages } from "./UpLoaderImages";
 
 interface Props {
   titleForm: string;
@@ -109,8 +110,16 @@ export const FormProduct = ({ titleForm }: Props) => {
           register = {register} />
         </SectionFormProduct>
 
-        <SectionFormProduct>
-          
+        <SectionFormProduct titleSection="Imágenes del producto">
+          <UpLoaderImages 
+            errors={errors}
+            setValue={setValue}
+            watch={watch}
+          />
+        </SectionFormProduct>
+
+        <SectionFormProduct titleSection="Descripción del producto" className="col-span-full">
+          <Editor />
         </SectionFormProduct>
 
         <div className="absolute top-0 right-0 flex gap-3">
