@@ -10,6 +10,7 @@ import { useEffect } from "react";
 import { generateSlug } from "../../helpers";
 import { VariantsInput } from "./VariantsInput";
 import { UpLoaderImages } from "./UpLoaderImages";
+import { Editor } from "./Editor";
 
 interface Props {
   titleForm: string;
@@ -33,15 +34,14 @@ export const FormProduct = ({ titleForm }: Props) => {
     console.log(data);
   });
 
-  const watchName = watch('name')
+  const watchName = watch("name");
 
   useEffect(() => {
-    if (!watchName) return
+    if (!watchName) return;
 
-    const generatedSlug = generateSlug(watchName)
-    setValue('slug', generatedSlug, {shouldTouch: true})
-    
-  }, [watchName, setValue])
+    const generatedSlug = generateSlug(watchName);
+    setValue("slug", generatedSlug, { shouldTouch: true });
+  }, [watchName, setValue]);
 
   return (
     <div className="relative flex flex-col gap-6">
@@ -83,43 +83,46 @@ export const FormProduct = ({ titleForm }: Props) => {
         </SectionFormProduct>
 
         <SectionFormProduct>
-          <InputForm 
-          type='text'
-          label='Slug'
-          name='slug'
-          placeholder="iphone-13-pro-max"
-          register={register}
-          errors={errors}
+          <InputForm
+            type="text"
+            label="Slug"
+            name="slug"
+            placeholder="iphone-13-pro-max"
+            register={register}
+            errors={errors}
           />
 
-          <InputForm 
-          type='text'
-          label='Marca'
-          name='brand'
-          placeholder="Apple"
-          register={register}
-          errors={errors}
-          required
+          <InputForm
+            type="text"
+            label="Marca"
+            name="brand"
+            placeholder="Apple"
+            register={register}
+            errors={errors}
+            required
           />
         </SectionFormProduct>
 
-        <SectionFormProduct titleSection="Variantes del Producto" className="h-2 lg:col-span-2">
-          <VariantsInput 
-          control = {control}
-          errors = {errors}
-          register = {register} />
+        <SectionFormProduct
+          titleSection="Variantes del Producto"
+          className="h-2 lg:col-span-2"
+        >
+          <VariantsInput
+            control={control}
+            errors={errors}
+            register={register}
+          />
         </SectionFormProduct>
 
         <SectionFormProduct titleSection="Imágenes del producto">
-          <UpLoaderImages 
-            errors={errors}
-            setValue={setValue}
-            watch={watch}
-          />
+          <UpLoaderImages errors={errors} setValue={setValue} watch={watch} />
         </SectionFormProduct>
 
-        <SectionFormProduct titleSection="Descripción del producto" className="col-span-full">
-          <Editor />
+        <SectionFormProduct
+          titleSection="Descripción del producto"
+          className="col-span-full"
+        >
+          <Editor setValue={setValue} errors={errors} />
         </SectionFormProduct>
 
         <div className="absolute top-0 right-0 flex gap-3">

@@ -12,3 +12,4 @@ export * from "./products/FormProduct";
 export * from "./products/FeaturesInput";
 export * from "./products/VariantsInput";
 export * from "./products/UpLoaderImages"
+export * from "./products/Editor";
