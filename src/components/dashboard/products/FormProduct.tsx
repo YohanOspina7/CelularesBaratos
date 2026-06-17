@@ -11,6 +11,9 @@ import { generateSlug } from "../../helpers";
 import { VariantsInput } from "./VariantsInput";
 import { UpLoaderImages } from "./UpLoaderImages";
 import { Editor } from "./Editor";
+import { createProduct } from "../../../actions";
+import { useCreateProduct } from "../../../hooks";
+import { Loader } from "../../shared/Loader";
 
 interface Props {
   titleForm: string;
@@ -28,21 +31,45 @@ export const FormProduct = ({ titleForm }: Props) => {
     resolver: zodResolver(productSchema),
   });
 
+  const { mutate: createProduct, isPending } = useCreateProduct();
+
   const navigate = useNavigate();
 
   const onSubmit = handleSubmit((data) => {
-    console.log(data);
+    const features = data.features.map((feature) => feature.value);
+    const formattedVariants = data.variants.map((variant) => ({
+      stock: variant.stock,
+      price: variant.price,
+      storage: variant.storage,
+      color: variant.color,
+      color_name: variant.colorName,
+      id: variant.id,
+    }));
+
+    createProduct({
+      name: data.name,
+      brand: data.brand,
+      slug: data.slug,
+      variants: formattedVariants,
+      images: data.images,
+      description: data.description,
+      features,
+    });
   });
 
   const watchName = watch("name");
 
   useEffect(() => {
+    register('description');
+    
     if (!watchName) return;
 
     const generatedSlug = generateSlug(watchName);
     setValue("slug", generatedSlug, { shouldTouch: true });
-  }, [watchName, setValue]);
+  }, [watchName, setValue, register]);
 
+  if (isPending) return <Loader />;
+  
   return (
     <div className="relative flex flex-col gap-6">
       <div className="flex items-center justify-between">

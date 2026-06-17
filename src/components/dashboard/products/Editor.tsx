@@ -85,9 +85,20 @@ export const Editor = ({ setValue, errors, initialContent }: Props) => {
     extensions: [StarterKit],
     content: initialContent || "",
     onUpdate: ({ editor }) => {
-      // Aquí actualizamos el valor del campo 'description.content en el formulario
-      const content = editor.getJSON();
-      setValue("description", content, { shouldValidate: true });
+      // Verificamos si el editor esta vacio
+      if (editor.isEmpty) {
+        // Le enviamos un string vacío puro para que zod dispare el error rojo
+        setValue("description", undefined as unknown as JSONContent, {
+          shouldValidate: true,
+          shouldDirty: true,
+        })
+      } else {
+        const content = editor.getJSON();
+        setValue("description", content, {
+          shouldValidate: true,
+          shouldDirty: true
+        })
+      }
     },
     editorProps: {
       attributes: {

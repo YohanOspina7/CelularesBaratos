@@ -82,7 +82,7 @@ export const TableProduct = () => {
           <tbody>
             {products.map((product, index) => {
               const selectedVariantIndex = selectedVariants[product.id] ?? 0;
-              const selectedVariant = product.variants[selectedVariantIndex];
+              const selectedVariant = product.variants[selectedVariantIndex] || {};
 
               return (
                 <tr key={index}>
@@ -117,10 +117,10 @@ export const TableProduct = () => {
                     </select>
                   </td>
                   <CellTableProduct
-                    content={formatPrice(selectedVariant.price)}
+                    content={formatPrice(selectedVariant?.price)}
                   />
                   <CellTableProduct
-                    content={selectedVariant.stock.toString()}
+                    content={(selectedVariant.stock || 0).toString()}
                   />
                   <CellTableProduct content={formatDate(product.created_at)} />
                   <td className="relative">

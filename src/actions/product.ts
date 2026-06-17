@@ -1,3 +1,4 @@
+import type { ProductInput } from "../interfaces";
 import { supabase } from "../supabase/client";
 
 export const getProducts = async (page: number) => {
@@ -113,4 +114,76 @@ export const searchProducts = async (searchTerm: string) => {
   }
 
   return data;
+};
+
+// ADMINISTRADOR
+export const createProduct = async (productInput: ProductInput) => {
+  try {
+    // 1. Crear el producto para obtener el ID del producto
+    const { data: product, error: productError } = await supabase
+      .from("products")
+      .insert({
+        name: productInput.name,
+        brand: productInput.brand,
+        slug: productInput.slug,
+        features: productInput.features,
+        description: productInput.description,
+        images: [],
+      })
+      .select()
+      .single();
+
+    if (productError) throw new Error(productError.message);
+
+    // 2. Subir las imagenes al bucket dentro de una carpeta que se creará a partir del producto
+    const folderName = product.id;
+
+    const uploadedImages = await Promise.all(
+      productInput.images.map(async (image) => {
+        const { data, error } = await supabase.storage
+          .from("product-images")
+          .upload(`${folderName}/${product.id}-${image.name}`, image);
+
+        if (error) throw new Error(error.message);
+
+        const imageUrl = `${
+          supabase.storage.from("product-images").getPublicUrl(data.path).data
+            .publicUrl
+        }`;
+
+        return imageUrl;
+      }),
+    );
+
+    // 3. Actualizar el producto con las imagenes subidas
+    const { error: updatedError } = await supabase
+      .from("products")
+      .update({
+        images: uploadedImages,
+      })
+      .eq("id", product.id);
+
+    if (updatedError) throw new Error(updatedError.message);
+
+    // 4. Crear las variantes del producto
+    const variants = productInput.variants.map((variant) => ({
+      product_id: product.id,
+      stock: variant.stock,
+      price: variant.price,
+      storage: variant.storage,
+      color: variant.color,
+      color_name: variant.color_name,
+    }));
+
+    const { error: variantError } = await supabase
+      .from("variants")
+      .insert(variants);
+
+    if (variantError) throw new Error(variantError.message);
+
+    return product;
+  } catch (error) {
+    console.log(error);
+    throw new Error("Error al crear el producto, vuelva a intentarlo");
+  }
 };
