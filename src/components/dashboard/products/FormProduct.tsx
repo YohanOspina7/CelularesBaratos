@@ -11,7 +11,6 @@ import { generateSlug } from "../../helpers";
 import { VariantsInput } from "./VariantsInput";
 import { UpLoaderImages } from "./UpLoaderImages";
 import { Editor } from "./Editor";
-import { createProduct } from "../../../actions";
 import { useCreateProduct } from "../../../hooks";
 import { Loader } from "../../shared/Loader";
 

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { FaEllipsis } from "react-icons/fa6";
 import { HiOutlineExternalLink } from "react-icons/hi";
 import { Link } from "react-router";
-import { useProducts } from "../../../hooks";
+import { useDeleteProduct, useProducts } from "../../../hooks";
 import { Loader } from "../../shared/Loader";
 import { type VariantProduct } from "../../../interfaces";
 import { formatDate, formatPrice } from "../../helpers";
@@ -36,6 +36,8 @@ export const TableProduct = () => {
     page,
   });
 
+  const { mutate, isPending } = useDeleteProduct();
+
   const handleMenuToggle = (index: number) => {
     if (openMenuIndex == index) {
       setOpenMenuIndex(null);
@@ -52,10 +54,11 @@ export const TableProduct = () => {
   };
 
   const handleDeleteProduct = (id: string) => {
-    console.log(id);
+    mutate(id);
+    setOpenMenuIndex(null);
   };
 
-  if (!productsData || isLoading || !totalProducts) return <Loader />;
+  if (!productsData || isLoading || !totalProducts || isPending) return <Loader />;
 
   const products = productsData.products;
 

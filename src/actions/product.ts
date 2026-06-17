@@ -187,3 +187,42 @@ export const createProduct = async (productInput: ProductInput) => {
     throw new Error("Error al crear el producto, vuelva a intentarlo");
   }
 };
+
+export const deleteProduct = async (productId: string) => {
+  // 1. Eliminar las variantes del producto
+  const { error: variantsError } = await supabase
+    .from("variants")
+    .delete()
+    .eq("product_id", productId);
+
+  if (variantsError) throw new Error(variantsError.message);
+
+  // 2. Obtener las imagenes del producto antes de eliminar
+  const { data: productImages, error: productImagesError } = await supabase
+    .from("products")
+    .select("images")
+    .eq("id", productId)
+    .single();
+
+  if (productImagesError) throw new Error(productImagesError.message);
+
+  // 3. Eliminar el porducto
+  const { error: productDeleteError } = await supabase.from('products').delete().eq('id', productId);
+
+  if (productDeleteError) throw new Error(productDeleteError.message);
+
+  // 4. Eliminar las imagenes del bucket
+  if (productImages.images.length > 0) {
+    const folderName = productId;
+    const paths = productImages.images.map((image => {
+      const fileName = image.split('/').pop();
+      return `${folderName}/${fileName}`;
+    }));
+
+    const { error: storageError } = await supabase.storage.from("product-images").remove(paths);
+
+    if (storageError) throw new Error(storageError.message);
+  }
+
+  return true;
+};
