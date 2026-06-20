@@ -1,5 +1,9 @@
+import { FormProduct } from "../../components/dashboard"
+
 export const DashboardProductSlugPage = () => {
   return (
-    <div>DashboardProductSlugPage</div>
+    <div>
+        <FormProduct titleForm="Editar Producto" />
+    </div>
   )
 }

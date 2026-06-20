@@ -58,7 +58,8 @@ export const TableProduct = () => {
     setOpenMenuIndex(null);
   };
 
-  if (!productsData || isLoading || !totalProducts || isPending) return <Loader />;
+  if (!productsData || isLoading || !totalProducts || isPending)
+    return <Loader />;
 
   const products = productsData.products;
 
@@ -85,7 +86,8 @@ export const TableProduct = () => {
           <tbody>
             {products.map((product, index) => {
               const selectedVariantIndex = selectedVariants[product.id] ?? 0;
-              const selectedVariant = product.variants[selectedVariantIndex] || {};
+              const selectedVariant =
+                product.variants[selectedVariantIndex] || {};
 
               return (
                 <tr key={index}>
@@ -139,7 +141,7 @@ export const TableProduct = () => {
                         role="menu"
                       >
                         <Link
-                          to={`/dashboard/productos/${product.slug}`}
+                          to={`/dashboard/productos/editar/${product.slug}`}
                           className="flex items-center w-full gap-1 px-4 py-2 text-xs font-medium text-left text-gray-700 hover:bg-gray-100"
                         >
                           Editar

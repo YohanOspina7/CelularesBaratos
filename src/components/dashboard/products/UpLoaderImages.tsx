@@ -5,7 +5,7 @@ import type {
 } from "react-hook-form";
 import type { ProductFormValues } from "../../../lib/validators";
 import { IoIosCloseCircleOutline } from "react-icons/io";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface ImagePreview {
   file?: File;
@@ -20,6 +20,22 @@ interface Props {
 
 export const UpLoaderImages = ({ setValue, watch, errors }: Props) => {
   const [images, setImages] = useState<ImagePreview[]>([]);
+
+  // Verificar si hay errores con las imagenes
+  const formImages = watch("images");
+
+  // Cargar imágenes existentes si las hay en el formulario
+  useEffect(() => {
+    if (formImages && formImages.length > 0 && images.length == 0) {
+      const existingImages = formImages.map((url) => ({
+        previewUrl: url,
+      }));
+      setImages(existingImages);
+
+      // Actualizar el valor del formulario
+      setValue("images", formImages);
+    }
+  }, [formImages, images.length, setValue]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -80,7 +96,7 @@ export const UpLoaderImages = ({ setValue, watch, errors }: Props) => {
         ))}
       </div>
 
-      {errors.images && (
+      {(!formImages || formImages?.length === 0) && errors.images && (
         <p className="mt-1 text-xs text-red-500">{errors.images?.message}</p>
       )}
     </>

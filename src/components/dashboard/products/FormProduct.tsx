@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { productSchema, type ProductFormValues } from "../../../lib/validators";
 import { IoIosArrowBack } from "react-icons/io";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { SectionFormProduct } from "./SectionFormProduct";
 import { useForm } from "react-hook-form";
 import { InputForm } from "./InputForm";
@@ -11,7 +11,7 @@ import { generateSlug } from "../../helpers";
 import { VariantsInput } from "./VariantsInput";
 import { UpLoaderImages } from "./UpLoaderImages";
 import { Editor } from "./Editor";
-import { useCreateProduct } from "../../../hooks";
+import { useCreateProduct, useProduct, useUpdateProduct } from "../../../hooks";
 import { Loader } from "../../shared/Loader";
 
 interface Props {
@@ -30,9 +30,39 @@ export const FormProduct = ({ titleForm }: Props) => {
     resolver: zodResolver(productSchema),
   });
 
+  const { slug } = useParams<{ slug: string }>();
+
+  const { product, isLoading } = useProduct(slug || "");
   const { mutate: createProduct, isPending } = useCreateProduct();
+  const { mutate: updateProduct, isPending: isUpdatePending } =
+    useUpdateProduct(product?.id || "");
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (product && !isLoading) {
+      setValue("name", product.name);
+      setValue("slug", product.slug);
+      setValue("brand", product.brand);
+      setValue(
+        "features",
+        product.features.map((f: string) => ({ value: f })),
+      );
+      setValue("description", product.description);
+      setValue("images", product.images);
+      setValue(
+        "variants",
+        product.variants.map((v) => ({
+          id: v.id,
+          stock: v.stock,
+          price: v.price,
+          storage: v.storage,
+          color: v.color,
+          colorName: v.color_name,
+        })),
+      );
+    }
+  }, [product, isLoading, setValue]);
 
   const onSubmit = handleSubmit((data) => {
     const features = data.features.map((feature) => feature.value);
@@ -45,30 +75,42 @@ export const FormProduct = ({ titleForm }: Props) => {
       id: variant.id,
     }));
 
-    createProduct({
-      name: data.name,
-      brand: data.brand,
-      slug: data.slug,
-      variants: formattedVariants,
-      images: data.images,
-      description: data.description,
-      features,
-    });
+    if (slug) {
+      updateProduct({
+        name: data.name,
+        brand: data.brand,
+        slug: data.slug,
+        variants: formattedVariants,
+        images: data.images,
+        description: data.description,
+        features,
+      });
+    } else {
+      createProduct({
+        name: data.name,
+        brand: data.brand,
+        slug: data.slug,
+        variants: formattedVariants,
+        images: data.images,
+        description: data.description,
+        features,
+      });
+    }
   });
 
   const watchName = watch("name");
 
   useEffect(() => {
-    register('description');
-    
+    register("description");
+
     if (!watchName) return;
 
     const generatedSlug = generateSlug(watchName);
     setValue("slug", generatedSlug, { shouldTouch: true });
   }, [watchName, setValue, register]);
 
-  if (isPending) return <Loader />;
-  
+  if (isPending || isUpdatePending || isLoading) return <Loader />;
+
   return (
     <div className="relative flex flex-col gap-6">
       <div className="flex items-center justify-between">
@@ -148,7 +190,11 @@ export const FormProduct = ({ titleForm }: Props) => {
           titleSection="Descripción del producto"
           className="col-span-full"
         >
-          <Editor setValue={setValue} errors={errors} />
+          <Editor
+            setValue={setValue}
+            errors={errors}
+            initialContent={product?.description}
+          />
         </SectionFormProduct>
 
         <div className="absolute top-0 right-0 flex gap-3">
