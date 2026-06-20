@@ -91,3 +91,14 @@ export const generateSlug = ( name: string ): string => {
   .replace(/[^a-z0-9]+/g, '-')
   .replace(/(^-|-$)/g, '')
 }
+
+// Función para extraer el path relativo al bucket de una URL
+export const extractFilePath = (url: string) => {
+  const parts = url.split("/storage/v1/object/public/product-images/")
+
+  if (parts.length !== 2) {
+    throw new Error(`URL de imagen no válida: ${url}`)
+  }
+
+  return parts[1]
+}

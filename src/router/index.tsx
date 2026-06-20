@@ -12,6 +12,7 @@ import {
   OrderUserPage,
   DashboardProductsPage,
   DashboardNewProductPage,
+  DashboardProductSlugPage,
 } from "../pages";
 import { LoginPage } from "../pages/LoginPage";
 import { RegisterPage } from "../pages/RegisterPage";
@@ -89,6 +90,10 @@ export const router = createBrowserRouter([
       {
         path: 'productos/new',
         element: <DashboardNewProductPage />
+      },
+      {
+        path: 'productos/editar/:slug',
+        element: <DashboardProductSlugPage />
       }
     ],
   },

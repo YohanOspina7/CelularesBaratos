@@ -1,3 +1,4 @@
+import { extractFilePath } from "../components/helpers";
 import type { ProductInput } from "../interfaces";
 import { supabase } from "../supabase/client";
 
@@ -207,22 +208,191 @@ export const deleteProduct = async (productId: string) => {
   if (productImagesError) throw new Error(productImagesError.message);
 
   // 3. Eliminar el porducto
-  const { error: productDeleteError } = await supabase.from('products').delete().eq('id', productId);
+  const { error: productDeleteError } = await supabase
+    .from("products")
+    .delete()
+    .eq("id", productId);
 
   if (productDeleteError) throw new Error(productDeleteError.message);
 
   // 4. Eliminar las imagenes del bucket
   if (productImages.images.length > 0) {
     const folderName = productId;
-    const paths = productImages.images.map((image => {
-      const fileName = image.split('/').pop();
+    const paths = productImages.images.map((image) => {
+      const fileName = image.split("/").pop();
       return `${folderName}/${fileName}`;
-    }));
+    });
 
-    const { error: storageError } = await supabase.storage.from("product-images").remove(paths);
+    const { error: storageError } = await supabase.storage
+      .from("product-images")
+      .remove(paths);
 
     if (storageError) throw new Error(storageError.message);
   }
 
   return true;
+};
+
+export const updateProduct = async (
+  productId: string,
+  productInput: ProductInput,
+) => {
+  // 1. Obtener las imagenes actuales del producto
+  const { data: currentProduct, error: currentProductError } = await supabase
+    .from("products")
+    .select("images")
+    .eq("id", productId)
+    .single();
+
+  if (currentProductError) throw new Error(currentProductError.message);
+
+  const existingImages = currentProduct.images || [];
+
+  // 2. Actualizar la informacin individual del producto
+  const { data: updatedProduct, error: productError } = await supabase
+    .from("products")
+    .update({
+      name: productInput.name,
+      brand: productInput.brand,
+      slug: productInput.slug,
+      features: productInput.features,
+      description: productInput.description,
+    })
+    .eq("id", productId)
+    .select()
+    .single();
+
+  if (productError) throw new Error(productError.message);
+
+  // 3. Manejo de imagenes (Subir nuevas y eliminar antiguas)
+  const folderName = productId;
+  const validImages = productInput.images.filter((image) => image);
+
+  // 3.1 Identificar las imagenes que han sido eliminadas
+  const imagesToDelete = existingImages.filter(
+    (image) => !validImages.includes(image),
+  );
+
+  // 3.2 Obtener los paths de los archivos a borrar
+  const filesToDelete = imagesToDelete.map(extractFilePath);
+
+  // 3.3 Eliminar las imagenes del bucket
+  if (filesToDelete.length > 0) {
+    const { error: deleteImagesError } = await supabase.storage
+      .from("product-images")
+      .remove(filesToDelete);
+
+    if (deleteImagesError) {
+      console.log(deleteImagesError.message);
+      throw new Error(deleteImagesError.message);
+    } else {
+      console.log(`Imagenes eliminadas: ${filesToDelete.join(", ")}`);
+    }
+  }
+
+  // 3.4 Subir las nuevas imagenes y construir el nuevo array de imagenes actualizado
+  const uploadedImages = await Promise.all(
+    validImages.map(async (image) => {
+      if (image instanceof File) {
+        // Sí la imagen no es un URL (es un archivo), entonces subelo al bucket
+        const { data, error } = await supabase.storage
+          .from("product-images")
+          .upload(`${folderName}/${productId}-${image.name}`, image);
+
+        if (error) throw new Error(error.message);
+
+        const imageUrl = supabase.storage
+          .from("product-images")
+          .getPublicUrl(data.path).data.publicUrl;
+
+        return imageUrl;
+      } else if (typeof image === "string") {
+        return image;
+      } else {
+        throw new Error("Tipo de imagen no soportado");
+      }
+    }),
+  );
+
+  // 4. Actualizar el producto con las imagenes actualizadas
+  const { error: updateImagesError } = await supabase
+    .from("products")
+    .update({ images: uploadedImages })
+    .eq("id", productId);
+
+  if (updateImagesError) throw new Error(updateImagesError.message);
+
+  // 5. Actualizar las variantes del producto
+  const existingVariants = productInput.variants.filter((v) => v.id);
+  const newVariants = productInput.variants.filter((v) => !v.id);
+
+  // 5.1 Modificar las variantes existentes
+  if (existingVariants.length > 0) {
+    const { error: updateVariantsError } = await supabase
+      .from("variants")
+      .upsert(
+        existingVariants.map((variant) => ({
+          id: variant.id,
+          product_id: productId,
+          stock: variant.stock,
+          price: variant.price,
+          storage: variant.storage,
+          color: variant.color,
+          color_name: variant.color_name,
+        })),
+        {
+          onConflict: "id",
+        },
+      );
+
+    if (updateVariantsError) throw new Error(updateVariantsError.message);
+  }
+
+  // 5.2 Crear y guardar las nuevas variantes
+  let newVariantIds: string[] = [];
+
+  if (newVariants.length > 0) {
+    const { data, error: insertVariantError } = await supabase
+      .from("variants")
+      .insert(
+        newVariants.map((variant) => ({
+          product_id: productId,
+          stock: variant.stock,
+          price: variant.price,
+          storage: variant.storage,
+          color: variant.color,
+          color_name: variant.color_name,
+        })),
+      )
+      .select();
+
+    if (insertVariantError) {
+      throw new Error(insertVariantError.message);
+    }
+
+    newVariantIds = data.map((variant) => variant.id);
+  }
+
+  // 5.3 Combianar los IDs de las variantes existentes y de las nuevas
+  const currentVariantIds = [
+    ...existingVariants.map((v) => v.id),
+    ...newVariantIds,
+  ];
+
+  // 5.4 Eliminar las variantes que no estan en la lista de IDs
+  const { error: deleteVariantsError } = await supabase
+    .from("variants")
+    .delete()
+    .eq("product_id", productId)
+    .not(
+      "id",
+      "in",
+      `(${currentVariantIds ? currentVariantIds.join(",") : 0})`,
+    );
+
+  if (deleteVariantsError) {
+    throw new Error(deleteVariantsError.message);
+  }
+
+  return updatedProduct;
 };
